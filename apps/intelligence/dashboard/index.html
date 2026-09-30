@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BharatSignal Command Center</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- DECORATIVE BG -->
+  <div id="bg-effects">
+    <div class="bg-gradient-mesh"></div>
+    <div class="bg-radar-sweep"></div>
+    <div class="bg-grid-overlay"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- HEADER -->
+    <header class="top-header glass-panel">
+      <div class="logo-section">
+        <div class="logo-pulse"></div>
+        <div class="logo-text">
+          <h1>BharatSignal</h1>
+          <span class="subtitle">NATIONAL INTELLIGENCE COMMAND CENTER</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- Live IST Clock -->
+        <div class="ist-clock">
+          <div class="ist-time" id="ist-time">--:--:--</div>
+          <div class="ist-label">IST · LIVE</div>
+        </div>
+        <!-- Live refresh countdown -->
+        <div class="refresh-badge" id="refresh-badge">
+          <span class="refresh-dot"></span>
+          <span id="refresh-countdown">LIVE</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-metrics" id="header-metrics"></div>
+        <div class="pipeline-status">
+          <div class="status-indicator"></div>
+          <span>SYSTEM NOMINAL</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="main-nav glass-panel">
+      <button class="nav-tab active" data-target="panel-overview">🗺 Overview</button>
+      <button class="nav-tab" data-target="panel-weather">🌡 Temperature</button>
+      <button class="nav-tab" data-target="panel-feed">📡 Signal Feed</button>
+      <button class="nav-tab" data-target="panel-dna">🧬 Incident DNA</button>
+      <button class="nav-tab" data-target="panel-evolution">🔁 Situation Evolution</button>
+      <button class="nav-tab" data-target="panel-forecasts">🔮 Forecasts</button>
+      <button class="nav-tab" data-target="panel-reality">🎯 Reality Loop</button>
+      <button class="nav-tab" data-target="panel-scenarios">🌲 Scenario Trees</button>
+      <button class="nav-tab" data-target="panel-replay">▶ Incident Replay</button>
+      <button class="nav-tab" data-target="panel-evidence">🛡 Evidence Layer</button>
+    </nav>
+
+    <!-- PANELS -->
+    <main class="content-area">
+
+      <!-- 1. Overview -->
+      <section id="panel-overview" class="panel active">
+        <div class="overview-layout">
+          
+          <!-- Top Row: Map and Metrics -->
+          <div class="top-row">
+            <!-- Map -->
+            <div class="map-container glass-card">
+              <div class="card-header">
+                <h2>🗺 National Geospatial Intelligence — All India</h2>
+                <div style="display:flex; gap:0.5rem; align-items:center; font-size:0.75rem; color:var(--text-muted);">
+                  <span class="legend-dot" style="background:#ff1e56;"></span>Critical
+                  <span class="legend-dot" style="background:#ff9f1c;"></span>High
+                  <span class="legend-dot" style="background:#f4d35e;"></span>Moderate
+                  <span class="legend-dot" style="background:#2ec4b6;"></span>Low
+                </div>
+              </div>
+              <div id="map"></div>
+            </div>
+
+            <!-- Side Metrics -->
+            <div class="side-metrics">
+              <div class="glass-card stat-card">
+                <span class="stat-label">Total Signals</span>
+                <span class="stat-value" id="stat-signals" data-is-percent="false">0</span>
+              </div>
+              <div class="glass-card stat-card">
+                <span class="stat-label">Incidents</span>
+                <span class="stat-value" id="stat-incidents" data-is-percent="false">0</span>
+              </div>
+              <div class="glass-card stat-card">
+                <span class="stat-label">Situations</span>
+                <span class="stat-value" id="stat-situations" data-is-percent="false">0</span>
+              </div>
+              <div class="glass-card stat-card">
+                <span class="stat-label">Accuracy</span>
+                <span class="stat-value" id="stat-accuracy" data-is-percent="true">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Environment & Situations -->
+          <div class="bottom-row">
+            <div class="bottom-left">
+              <!-- National Environment -->
+              <div class="glass-card national-env-card" id="national-env-card">
+                <div class="env-left">
+                  <div class="env-icon" id="env-icon">🌍</div>
+                  <div>
+                    <div class="env-label">NATIONAL ENVIRONMENT</div>
+                    <div class="env-temp" id="env-temp">Scanning...</div>
+                  </div>
+                </div>
+                <div class="env-right">
+                  <div class="env-label">PRIMARY THREAT VECTOR</div>
+                  <div class="env-threat" id="env-threat">Calculating...</div>
+                </div>
+              </div>
+
+              <!-- India Temperature Strip -->
+              <div class="glass-card" style="padding:0.75rem;">
+                <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;">🌡 Live Temperatures Across India (°C)</div>
+                <div class="temp-strip" id="temp-strip">
+                  <div class="temp-loading">Fetching live temperatures...</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-right">
+              <!-- Active Situations -->
+              <div class="situations-summary glass-card">
+                <div class="card-header"><h2>Active Situations</h2></div>
+                <div class="situations-list" id="active-situations-list"></div>
+              </div>
+
+              <!-- Top Predictions -->
+              <div class="top-predictions glass-card">
+                <div class="card-header"><h2>🔮 Top Critical Predictions</h2></div>
+                <div class="predictions-list" id="top-predictions-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Temperature Forecast Panel -->
+      <section id="panel-weather" class="panel">
+        <div class="weather-header glass-card" style="padding:1rem; margin-bottom:1rem;">
+          <h2 style="color:var(--accent-cyan); font-family:var(--font-display);">🌡 India Temperature Intelligence — Live &amp; Forecast</h2>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.25rem;">Real-time temperatures from national grid + today's hourly forecast for major cities</p>
+        </div>
+        <div class="weather-cities-grid" id="weather-cities-grid">
+          <div class="empty-state">Loading live temperature data...</div>
+        </div>
+        <div class="glass-card" style="margin-top:1rem; padding:1.25rem;">
+          <h3 style="color:var(--accent-cyan); font-size:1rem; margin-bottom:1rem;">Today's National Temperature Forecast</h3>
+          <canvas id="temp-forecast-chart" height="120"></canvas>
+        </div>
+      </section>
+
+      <!-- 3. Signal Feed -->
+      <section id="panel-feed" class="panel">
+        <div class="glass-card filter-bar">
+          <select id="filter-region"><option value="all">All Regions</option></select>
+          <select id="filter-type"><option value="all">All Types</option></select>
+          <select id="filter-provenance"><option value="all">All Provenance</option></select>
+          <span id="feed-count" style="color:var(--text-muted); font-size:0.8rem; margin-left:auto; font-family:var(--font-mono);"></span>
+        </div>
+        <div class="feed-grid" id="signal-feed-list"></div>
+      </section>
+
+      <!-- 4. Incident DNA -->
+      <section id="panel-dna" class="panel">
+        <div class="glass-card" style="padding:0.75rem; margin-bottom:1rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Filter by Region:</span>
+          <select id="dna-region-filter" style="background:rgba(0,0,0,0.5); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:0.3rem 0.7rem; border-radius:6px; font-size:0.8rem;">
+            <option value="all">All India</option>
+          </select>
+        </div>
+        <div class="dna-grid" id="incident-dna-list"></div>
+      </section>
+
+      <!-- 5. Situation Evolution -->
+      <section id="panel-evolution" class="panel">
+        <div class="evolution-grid" id="situation-evolution-list"></div>
+      </section>
+
+      <!-- 6. Predictive Forecasts -->
+      <section id="panel-forecasts" class="panel">
+        <div class="forecasts-grid" id="predictive-forecasts-list"></div>
+      </section>
+
+      <!-- 7. Reality Loop -->
+      <section id="panel-reality" class="panel">
+        <div class="reality-grid" id="reality-loop-list"></div>
+      </section>
+
+      <!-- 8. Scenario Trees -->
+      <section id="panel-scenarios" class="panel">
+        <div class="scenarios-grid" id="scenario-trees-list"></div>
+      </section>
+
+      <!-- 9. Incident Replay -->
+      <section id="panel-replay" class="panel">
+        <div class="glass-card" style="padding:0.75rem; margin-bottom:1rem;">
+          <label style="color:var(--text-muted); font-size:0.8rem;">Select Incident: </label>
+          <select id="replay-incident-select" style="background:rgba(0,0,0,0.5); border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:0.3rem 0.7rem; border-radius:6px; font-size:0.8rem; margin-left:0.5rem;">
+            <option value="">-- Choose Incident --</option>
+          </select>
+        </div>
+        <div id="incident-replay-list"></div>
+      </section>
+
+      <!-- 10. Evidence Layer -->
+      <section id="panel-evidence" class="panel">
+        <div class="evidence-grid" id="evidence-provenance-list"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="app_v3.js"></script>
+</body>
+</html>
